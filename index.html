@@ -1052,25 +1052,24 @@
             camera.updateProjectionMatrix();
             renderer.setSize(window.innerWidth, window.innerHeight);
         });
-
-        <div id="chat-panel"
-             style="position:fixed; bottom:10px; left:10px; width:260px; max-height:200px; background:rgba(0,0,0,0.8); border:1px solid #444; border-radius:6px; display:none; flex-direction:column; z-index:20; pointer-events:auto; font-size:12px;">
-            <div style="padding:4px 8px; border-bottom:1px solid #333; color:#ccc; display:flex; justify-content:space-between; align-items:center;">
-                <span>Room Chat</span>
-                <span style="font-size:10px; color:#777;">[T] to focus</span>
-            </div>
-            <div id="chat-messages"
-                 style="flex:1; padding:6px 8px; overflow-y:auto; color:#ddd; font-family:monospace;"></div>
-            <div style="display:flex; gap:4px; padding:4px 4px 6px 4px;">
-                <input id="chat-input"
-                       type="text"
-                       placeholder="type message..."
-                       style="flex:1; padding:4px 6px; border-radius:4px; border:1px solid #444; background:#111; color:#eee; font-size:12px;">
-                <button id="chat-send-btn"
-                        style="padding:4px 8px; border-radius:4px; border:1px solid #555; background:#333; color:#eee; cursor:pointer; font-size:12px;">Send</button>
-            </div>
-        </div>
-
     </script>    
+    <!-- ✅ CHAT PANEL: this goes OUTSIDE the <script>, still inside <body> -->
+    <div id="chat-panel"
+         style="position:fixed; bottom:10px; left:10px; width:260px; max-height:200px; background:rgba(0,0,0,0.8); border:1px solid #444; border-radius:6px; display:none; flex-direction:column; z-index:20; pointer-events:auto; font-size:12px;">
+        <div style="padding:4px 8px; border-bottom:1px solid #333; color:#ccc; display:flex; justify-content:space-between; align-items:center;">
+            <span>Room Chat</span>
+            <span style="font-size:10px; color:#777;">[T] to focus</span>
+        </div>
+        <div id="chat-messages"
+             style="flex:1; padding:6px 8px; overflow-y:auto; color:#ddd; font-family:monospace;"></div>
+        <div style="display:flex; gap:4px; padding:4px 4px 6px 4px;">
+            <input id="chat-input"
+                   type="text"
+                   placeholder="type message..."
+                   style="flex:1; padding:4px 6px; border-radius:4px; border:1px solid #444; background:#111; color:#eee; font-size:12px;">
+            <button id="chat-send-btn"
+                    style="padding:4px 8px; border-radius:4px; border:1px solid #555; background:#333; color:#eee; cursor:pointer; font-size:12px;">Send</button>
+        </div>
+    </div>    
 </body>
 </html>
