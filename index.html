@@ -284,6 +284,12 @@
         const BOARD_OFFSET = (8 * BOARD_SQUARE_SIZE) / 2 - (BOARD_SQUARE_SIZE / 2);
         let ASSETS_PATH = '';
 
+        // Themes that are under development / coming soon
+        const IN_PROGRESS_THEMES = [
+            "super_mario_world",
+            "justice_league_vs_legion_of_doom"
+        ];
+
         const game = new Chess();
         let selectedSquare = null;
         let selectedMesh = null;
@@ -326,18 +332,72 @@
                 .then(themes => {
                     const sel = document.getElementById('theme-select');
                     sel.innerHTML = '';
-                    if(themes.length === 0) {
-                        const opt = document.createElement('option'); opt.text = "No themes found"; sel.add(opt); return;
+                
+                    if (!themes || themes.length === 0) {
+                        const opt = document.createElement('option');
+                        opt.text = "No themes found";
+                        opt.disabled = true;
+                        opt.selected = true;
+                        sel.add(opt);
+                        return;
                     }
-                    themes.forEach(t => {
-                        const opt = document.createElement('option'); opt.value = t; opt.text = t.replace(/_/g, ' ').toUpperCase(); sel.add(opt);
-                    });
-                    sel.value = themes[themes.length-1];
+                
+                    // Split themes into ready + in-progress
+                    const readyThemes = themes.filter(t => !IN_PROGRESS_THEMES.includes(t));
+                    const inProgressThemes = themes.filter(t => IN_PROGRESS_THEMES.includes(t));
+                
+                    const prettyName = (t) => t.replace(/_/g, ' ').toUpperCase();
+                
+                    // === READY TO GO SECTION ===
+                    if (readyThemes.length > 0) {
+                        const labelReady = document.createElement('option');
+                        labelReady.text = "=== READY TO PLAY ===";
+                        labelReady.disabled = true;
+                        labelReady.selected = true;
+                        sel.add(labelReady);
+                    
+                        readyThemes.forEach(t => {
+                            const opt = document.createElement('option');
+                            opt.value = t;
+                            opt.text = prettyName(t);
+                            sel.add(opt);
+                        });
+                    }
+                
+                    // === UNDER DEVELOPMENT SECTION (PLAYABLE BUT WIP) ===
+                    if (inProgressThemes.length > 0) {
+                        const labelInProgress = document.createElement('option');
+                        labelInProgress.text = "=== UNDER DEVELOPMENT (WIP THEMES) ===";
+                        labelInProgress.disabled = true;
+                        if (readyThemes.length === 0) labelInProgress.selected = true;
+                        sel.add(labelInProgress);
+                    
+                        inProgressThemes.forEach(t => {
+                            const opt = document.createElement('option');
+                            opt.value = t;
+                            opt.text = `${prettyName(t)} [WIP – assets/animations not final]`;
+                            opt.disabled = false;  // still playable
+                            sel.add(opt);
+                        });
+                    }
+                
+                    // Default selection: first non-label option if possible
+                    for (let i = 0; i < sel.options.length; i++) {
+                        if (!sel.options[i].disabled) {
+                            sel.selectedIndex = i;
+                            break;
+                        }
+                    }
                 })
                 .catch(e => {
                     console.error("Theme Load Error:", e);
                     const sel = document.getElementById('theme-select');
-                    sel.innerHTML = '<option disabled selected value="">Generate assets first!</option>';
+                    sel.innerHTML = '';
+                    const opt = document.createElement('option');
+                    opt.disabled = true;
+                    opt.selected = true;
+                    opt.text = "Generate assets first!";
+                    sel.add(opt);
                 });
         }
 
@@ -351,23 +411,28 @@
         function startGame() {
             const sel = document.getElementById('theme-select');
             const nameInput = document.getElementById('player-name-input');
-            
+
             if(!sel.value || sel.value === "") {
                 alert("Please select a valid theme. If none appear, run asset_generator.py first!");
                 return;
             }
-
+        
+            // 🟡 Warn if they picked a WIP theme
+            if (IN_PROGRESS_THEMES.includes(sel.value)) {
+                alert("Heads up: this theme is under development.\nSome assets or battle animations may be missing or not final.");
+            }
+        
             PLAYER_NAME = nameInput.value.trim() || "Commander";
             document.getElementById('player-display').innerText = `COMMANDER: ${PLAYER_NAME.toUpperCase()}`;
-
+        
             CURRENT_THEME = sel.value;
             ASSETS_PATH = `assets/${CURRENT_THEME}/`;
-            
+        
             document.getElementById('start-menu').classList.remove('active');
-            
+        
             buildSimpleBoard();
             initPieces();
-            
+
             const isMobile = window.innerWidth < 768;
             if (PLAYER_COLOR === 'w') { 
                 const zPos = isMobile ? 110 : 80;
@@ -381,7 +446,7 @@
                 camera.lookAt(0,0,0); 
                 controls.target.set(0,0,0); 
             }
-            
+
             updateStatus();
             if(PLAYER_COLOR === 'b') setTimeout(makeAIMove, 1000);
         }
