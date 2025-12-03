@@ -480,6 +480,15 @@
         const pieceCache = {};
         let particles = [];
 
+        const raycaster = new THREE.Raycaster();
+        const mouse = new THREE.Vector2();
+
+        const inputState = {
+            isPointerDown: false,
+            startX: 0,
+            startY: 0
+        };
+
         // --- INITIALIZATION ---
         window.onload = function() { 
             loadThemes().then(() => {
